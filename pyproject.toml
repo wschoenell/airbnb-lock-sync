@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "icalendar>=6.3.2",
+    "requests>=2.32.5",
     "seam>=1.145.0",
 ]

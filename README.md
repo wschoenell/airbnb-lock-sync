@@ -10,6 +10,9 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
 - 📅 **Future Events Filtering**: Only processes reservations within a configurable time window
 - 🔍 **Discrepancy Detection**: Identifies mismatches between reservations and access codes
 - ✨ **Auto Cleanup**: Removes expired or invalid access codes automatically
+- 📱 **Telegram Notifications**: Get instant notifications when codes are created, updated, or deleted
+- 🧪 **Dry Run Mode**: Test your configuration without making actual changes to the lock
+- 🌍 **Timezone Support**: Automatically converts times to your local timezone
 
 ## Prerequisites
 
@@ -53,7 +56,20 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
    export AIRBNB_CHECK_OUT="10:30"  # Your check-out time
    export AIRBNB_TZ="America/Sao_Paulo"  # Your timezone
    export MAIN_UPDATE_TIMES=true  # Set to false to only check codes, not times
+   export MAIN_DRY_RUN=false  # Set to true to test without making actual changes
+   export TELEGRAM_TOKEN=your_telegram_bot_token_here  # Optional: for notifications
+   export TELEGRAM_CHAT_ID=123456789  # Optional: your Telegram chat ID(s)
    ```
+
+5. **Set up Telegram notifications** (Optional)
+   
+   - Create a bot with [@BotFather](https://t.me/botfather) on Telegram
+   - Copy the bot token to `TELEGRAM_TOKEN`
+   - Send a message to your bot, then run:
+     ```bash
+     source env/api.env && python telegram_bot/telegram_bot.py
+     ```
+   - Copy your chat ID to `TELEGRAM_CHAT_ID` (supports comma-separated list for multiple recipients)
 
 ## Configuration
 
@@ -69,6 +85,9 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
 | `AIRBNB_CHECK_OUT` | Check-out time in HH:MM format | `"10:30"` |
 | `AIRBNB_TZ` | Timezone for check-in/check-out times | `"America/Sao_Paulo"` |
 | `MAIN_UPDATE_TIMES` | Update access code times (true/false) | `true` |
+| `MAIN_DRY_RUN` | Test mode without making actual changes | `false` |
+| `TELEGRAM_TOKEN` | Telegram bot token (optional) | `123456:ABC-DEF...` |
+| `TELEGRAM_CHAT_ID` | Telegram chat ID(s), comma-separated (optional) | `123456789,987654321` |
 
 ### Getting Your Credentials
 
@@ -78,6 +97,13 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
    - Go to your Airbnb hosting dashboard
    - Navigate to Calendar → Availability settings
    - Find the "Export calendar" link and copy the iCal URL
+
+4. **Telegram Bot** (Optional):
+   - Open Telegram and search for [@BotFather](https://t.me/botfather)
+   - Create a new bot with `/newbot` command
+   - Save the bot token
+   - Send a message to your bot
+   - Run `python telegram_bot/telegram_bot.py` to get your chat ID
 
 ## Usage
 
@@ -120,10 +146,13 @@ airbnb_lock_sync/
 │   └── airbnb_ical.py      # Airbnb iCal parsing and event extraction
 ├── yale/
 │   └── yale.py             # Yale lock interface via Seam API
+├── telegram_bot/
+│   └── telegram_bot.py     # Telegram notification integration
 ├── env/
 │   ├── api.env             # Your credentials (gitignored)
 │   └── api.env.example     # Template for credentials
 ├── pyproject.toml          # Project dependencies
+├── LICENSE                 # MIT License
 └── README.md               # This file
 ```
 
@@ -155,6 +184,52 @@ uv sync
 **Timezone issues**:
 - Use standard IANA timezone names (e.g., `America/New_York`, `Europe/London`)
 - Verify check-in/check-out times are in 24-hour format (HH:MM)
+
+**Telegram notifications not working**:
+- Verify your bot token is correct
+- Make sure you've sent at least one message to your bot
+- Check that `TELEGRAM_CHAT_ID` is set correctly
+- For multiple recipients, use comma-separated values: `123,456,789`
+
+**False time discrepancies**:
+- The system now normalizes datetime formats automatically
+- Times are compared without microseconds to avoid false positives
+
+## Telegram Notifications
+
+When enabled, you'll receive beautifully formatted notifications for:
+
+**New Access Code:**
+```
+✅ New Lock Code Created
+
+📋 Reservation: HMABCDEF123
+🔑 Access Code: 1234
+📅 Check-in: Nov 25, 2025 at 01:00 PM -03
+📅 Check-out: Nov 27, 2025 at 10:30 AM -03
+🔗 View Reservation
+```
+
+**Updated Code:**
+```
+🔄 Lock Code Updated
+
+📋 Reservation: HMABCDEF123
+🔑 Access Code: 1234
+📅 Check-in: Nov 25, 2025 at 01:00 PM -03
+📅 Check-out: Nov 27, 2025 at 10:30 AM -03
+```
+
+**Deleted Code:**
+```
+🗑️ Lock Code Deleted
+
+📋 Reservation: HMABCDEF123
+🔑 Access Code: 1234
+ℹ️ Reason: No matching reservation found
+```
+
+All times are displayed in your configured timezone for easy reference!
 
 ## Contributing
 

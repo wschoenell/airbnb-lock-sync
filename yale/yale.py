@@ -1,20 +1,6 @@
 from seam import Seam
 import os
 
-# Seam() automatically uses the SEAM_API_KEY environment variable
-
-
-# Replace with the actual device_id of your lock
-
-
-# device = seam.devices.get(device_id=device_id)
-# if device.can_program_online_access_codes:
-#     # Create the ongoing access code
-#     access_code = seam.access_codes.create(
-#         device_id=device_id,
-#         name="My Ongoing Code",
-#         code="7994" # Specify your desired PIN code
-#     )
 
 class YaleLock:
     def __init__(self, device_id: str):

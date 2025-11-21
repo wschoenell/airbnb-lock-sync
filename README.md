@@ -17,7 +17,7 @@ Automatically synchronize Airbnb reservations with Seam smart lock access codes 
 ## Prerequisites
 
 - Python 3.10 or higher
-- A smart lock compatible with Seam API
+- A smart lock compatible with Seam API ([see supported devices](https://www.seam.co/supported-devices-and-systems))
 - Seam API account and API key
 - Airbnb iCal calendar URL
 

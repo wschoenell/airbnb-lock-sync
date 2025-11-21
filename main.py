@@ -3,6 +3,7 @@ import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from airbnb_ical.airbnb_ical import get_future_events
+from locks.seam import SeamLock
 from telegram_bot.telegram_bot import send_telegram_message
 
 def check_code(reservation, access_code, check_times=os.getenv("MAIN_UPDATE_TIMES", 'False').lower() in ('true', '1', 't')):
@@ -154,11 +155,10 @@ if __name__ == "__main__":
     for reservation in current_reservations:
         print(reservation)
     
-    # get the access codes from the yale lock
-    from yale.yale import YaleLock
-    yale_lock = YaleLock(device_id=os.getenv("SEAM_LOCK"))
-    access_codes = yale_lock.grab_access_codes()
-    print("Access Codes from Yale Lock:")
+    # get the access codes from the lock
+    lock = SeamLock(device_id=os.getenv("SEAM_LOCK"))
+    access_codes = lock.grab_access_codes()
+    print("Access Codes from Lock:")
     for code in access_codes:
         print(f"Access Code Name: {code['name']}, Code: {code['code']}")
 
@@ -172,14 +172,14 @@ if __name__ == "__main__":
         if code not in lock_codes:
             print(f"Missing Access Code for Reservation: {reservation}")
             # Create the access code
-            create_code(reservation, yale_lock)
+            create_code(reservation, lock)
             sys.exit(0)
         else:
             if not check_code(reservation, lock_codes[code]):
-                update_code(reservation, lock_codes[code], yale_lock)
+                update_code(reservation, lock_codes[code], lock)
     
     # Check for any access codes that do not have a matching reservation
     for code, access_code in lock_codes.items():
         if code not in reservation_codes:
             print(f"Extra Access Code without Reservation: {access_code['name']}, Code: {access_code['code']}")
-            delete_code(access_code, yale_lock)
+            delete_code(access_code, lock)

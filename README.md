@@ -1,10 +1,10 @@
 # Airbnb Lock Sync
 
-Automatically synchronize Airbnb reservations with Yale smart lock access codes using the Seam API. This project fetches upcoming reservations from your Airbnb iCal feed and manages temporary access codes on your Yale lock, ensuring guests have the correct PIN code for their stay duration.
+Automatically synchronize Airbnb reservations with Seam smart lock access codes using the Seam API. This project fetches upcoming reservations from your Airbnb iCal feed and manages temporary access codes on your Seam lock, ensuring guests have the correct PIN code for their stay duration.
 
 ## Features
 
-- 🔄 **Automatic Synchronization**: Fetches Airbnb reservations and syncs them with Yale lock access codes
+- 🔄 **Automatic Synchronization**: Fetches Airbnb reservations and syncs them with lock access codes
 - 🔐 **Smart Access Codes**: Uses the last 4 digits of guest phone numbers as PIN codes
 - ⏰ **Time Management**: Configurable check-in/check-out times with timezone support
 - 📅 **Future Events Filtering**: Only processes reservations within a configurable time window
@@ -17,7 +17,7 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
 ## Prerequisites
 
 - Python 3.10 or higher
-- A Yale smart lock compatible with Seam API
+- A smart lock compatible with Seam API
 - Seam API account and API key
 - Airbnb iCal calendar URL
 
@@ -78,7 +78,7 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `SEAM_API_KEY` | Your Seam API key | `seam_xxxxx...` |
-| `SEAM_LOCK` | Device ID of your Yale lock | `994edb27-9d9b-...` |
+| `SEAM_LOCK` | Device ID of your lock | `994edb27-9d9b-...` |
 | `AIRBNB_ICAL` | Airbnb iCal calendar URL | `https://www.airbnb.com/calendar/ical/...` |
 | `AIRBNB_MAX_START` | Maximum days ahead to check reservations | `15` |
 | `AIRBNB_CHECK_IN` | Check-in time in HH:MM format | `"13:00"` |
@@ -92,7 +92,7 @@ Automatically synchronize Airbnb reservations with Yale smart lock access codes 
 ### Getting Your Credentials
 
 1. **Seam API Key**: Sign up at [Seam Console](https://console.seam.co/) and create an API key
-2. **Lock Device ID**: After connecting your Yale lock to Seam, get the device ID from the Seam dashboard
+2. **Lock Device ID**: After connecting your lock to Seam, get the device ID from the Seam dashboard
 3. **Airbnb iCal URL**: 
    - Go to your Airbnb hosting dashboard
    - Navigate to Calendar → Availability settings
@@ -144,8 +144,8 @@ airbnb_lock_sync/
 ├── main.py                  # Main synchronization script
 ├── airbnb_ical/
 │   └── airbnb_ical.py      # Airbnb iCal parsing and event extraction
-├── yale/
-│   └── yale.py             # Yale lock interface via Seam API
+├── locks/
+│   └── seam.py             # Seam lock interface via Seam API (tested with Yale locks)
 ├── telegram_bot/
 │   └── telegram_bot.py     # Telegram notification integration
 ├── env/

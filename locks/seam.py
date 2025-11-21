@@ -43,14 +43,14 @@ class SeamLock:
     
 if __name__ == "__main__":
     device_id = os.getenv("SEAM_LOCK") 
-    yale_lock = SeamLock(device_id=device_id)
+    lock = SeamLock(device_id=device_id)
     
     # # Create a new access code
-    # new_code = yale_lock.create_access_code(name="Guest Code", code="4567")
+    # new_code = lock.create_access_code(name="Guest Code", code="4567")
     # print(f"Created Access Code: {new_code.code}")
     
     # Retrieve and print all access codes
-    codes = yale_lock.grab_access_codes()
+    codes = lock.grab_access_codes()
     print(codes)
 
 # try:

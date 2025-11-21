@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# IDE files
+.history/
+
+# Environment files with secrets
+*.env
+env/
+.env
+.env.*
+
+# Auth tokens and cache files
+auth.txt
+*.token
+*.key

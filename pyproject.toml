@@ -1,0 +1,10 @@
+[project]
+name = "airbnb-lock-sync"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "icalendar>=6.3.2",
+    "seam>=1.145.0",
+]

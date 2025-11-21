@@ -43,7 +43,8 @@ class TelegramBot:
             
             payload = {
                 "chat_id": cid,
-                "text": text
+                "text": text,
+                "disable_web_page_preview": True
             }
             
             if parse_mode:
@@ -80,7 +81,7 @@ class TelegramBot:
         else:
             return [str(chat_id)]
     
-    def get_updates(self, offset=None, limit=100, timeout=0):
+    def get_updates(self, offset=None, limit=100, timeout=0, clear=True):
         """
         Get updates from Telegram bot (useful for getting chat_id).
         
@@ -88,6 +89,7 @@ class TelegramBot:
             offset (int, optional): Identifier of the first update to be returned
             limit (int, optional): Limits the number of updates to be retrieved
             timeout (int, optional): Timeout in seconds for long polling
+            clear (bool, optional): If True, clears the updates after retrieving them. Default is True.
         
         Returns:
             dict: Response from Telegram API with updates
@@ -105,7 +107,16 @@ class TelegramBot:
         try:
             response = requests.get(url, params=params, timeout=timeout + 10)
             response.raise_for_status()
-            return response.json()
+            result = response.json()
+            
+            # Clear updates if requested and updates were received
+            if clear and result.get("ok") and result.get("result"):
+                # Get the last update_id and call getUpdates with offset = last_update_id + 1
+                last_update_id = max(update["update_id"] for update in result["result"])
+                clear_params = {"offset": last_update_id + 1, "limit": 1}
+                requests.get(url, params=clear_params, timeout=10)
+            
+            return result
         except requests.RequestException as e:
             print(f"Error getting Telegram updates: {e}")
             raise
@@ -151,14 +162,17 @@ if __name__ == "__main__":
     updates = bot.get_updates()
     
     if updates.get("result"):
+        print(f"\nFound {len(updates['result'])} update(s):\n")
         for update in updates["result"]:
             if "message" in update:
                 chat_id = update["message"]["chat"]["id"]
-                print(f"Found chat_id: {chat_id}")
-                
-                # Send a test message
-                response = bot.send_message(chat_id, "Hello from Airbnb Lock Sync! 🔐")
-                print(f"Message sent: {response}")
-                break
+                chat_name = update["message"]["chat"].get("first_name", "Unknown")
+                text = update["message"].get("text", "(no text)")
+                update_id = update["update_id"]
+                print(f"Update ID: {update_id}")
+                print(f"  Chat ID: {chat_id}")
+                print(f"  Chat Name: {chat_name}")
+                print(f"  Message: {text}")
+                print()
     else:
         print("No updates found. Send a message to your bot first, then run this script again.")

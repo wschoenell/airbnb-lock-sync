@@ -181,5 +181,23 @@ if __name__ == "__main__":
     # Check for any access codes that do not have a matching reservation
     for code, access_code in lock_codes.items():
         if code not in reservation_codes:
-            print(f"Extra Access Code without Reservation: {access_code['name']}, Code: {access_code['code']}")
-            delete_code(access_code, lock)
+            # Only delete if the access code has already expired
+            ends_at = access_code.get('ends_at')
+            if ends_at:
+                try:
+                    # Parse the ends_at datetime and ensure it's timezone-aware
+                    ends_at_dt = datetime.fromisoformat(ends_at.replace('Z', '+00:00'))
+                    
+                    # Get current time in UTC for comparison
+                    now_utc = datetime.now(ZoneInfo('UTC'))
+                    
+                    if ends_at_dt < now_utc:
+                        print(f"Extra Access Code without Reservation: {access_code['name']}, Code: {access_code['code']}, Ended at: {ends_at}")
+                        delete_code(access_code, lock)
+                    else:
+                        print(f"Skipping deletion of active access code: {access_code['name']}, Code: {access_code['code']}, Ends at: {ends_at}")
+                except Exception as e:
+                    print(f"Error parsing ends_at time for {access_code['name']}: {e}")
+                    # If we can't parse the time, skip deletion to be safe
+            else:
+                print(f"Access code {access_code['name']} has no ends_at time, skipping deletion")
